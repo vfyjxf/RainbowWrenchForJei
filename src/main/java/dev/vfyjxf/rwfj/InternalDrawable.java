@@ -32,7 +32,7 @@ public class InternalDrawable implements IDrawable {
     public InternalDrawable(int width, int height) {
         this.width = width;
         this.height = height;
-        this.tickTimer = new TickTimer(20, 7, false);
+        this.tickTimer = new TickTimer(15, 7, false);
     }
 
     @Override
