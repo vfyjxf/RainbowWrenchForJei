@@ -9,30 +9,18 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class InternalDrawable implements IDrawable {
 
     private final int width;
     private final int height;
     private final ITickTimer tickTimer;
-    private final List<ResourceLocation> resourceLocations = Stream.of(
-            "textures/config_button_cheat0.png",
-            "textures/config_button_cheat1.png",
-            "textures/config_button_cheat2.png",
-            "textures/config_button_cheat3.png",
-            "textures/config_button_cheat4.png",
-            "textures/config_button_cheat5.png",
-            "textures/config_button_cheat6.png",
-            "textures/config_button_cheat7.png"
-    ).map(it -> new ResourceLocation(Tags.MOD_ID, it)).collect(Collectors.toList());
+    private final ResourceLocation resourceLocation = new ResourceLocation(Tags.MOD_ID, "textures/config_button_cheat.png");
 
     public InternalDrawable(int width, int height) {
         this.width = width;
         this.height = height;
-        this.tickTimer = new TickTimer(15, 7, false);
+        this.tickTimer = new TickTimer(45, 360, false);
     }
 
     @Override
@@ -48,15 +36,21 @@ public class InternalDrawable implements IDrawable {
     @Override
     public void draw(@Nonnull Minecraft minecraft, int xOffset, int yOffset) {
         Minecraft mc = Minecraft.getMinecraft();
-        int index = tickTimer.getValue();
-        mc.getTextureManager().bindTexture(resourceLocations.get(index));
-        int angle = 360 / resourceLocations.size();
+
+        float scale = 0.95f;
+        int angle = tickTimer.getValue() % 360;
+        float red = (float) Math.abs(Math.sin(Math.toRadians(angle)));
+        float green = (float) Math.abs(Math.sin(Math.toRadians(angle + 120)));
+        float blue = (float) Math.abs(Math.sin(Math.toRadians(angle + 240)));
+
+        mc.getTextureManager().bindTexture(resourceLocation);
         GlStateManager.pushMatrix();
-        GlStateManager.translate(xOffset + (float) width / 2, yOffset + (float) height / 2, 0);
-        GlStateManager.rotate(angle * index, 0, 0, 1);
-        Gui.drawModalRectWithCustomSizedTexture(-width / 2, -height / 2, 0, 0, width, height, width, height);
+        GlStateManager.translate(xOffset + width / 2f, yOffset + height / 2f, 0);
+        GlStateManager.color(red, green, blue, 1.0f);
+        GlStateManager.rotate(angle, 0.0f, 0.0f, 1.0f);
+        GlStateManager.scale(scale, scale, 1.0f);
+        GlStateManager.translate(-(width / 2f) / scale, -(height / 2f) / scale, 0);
+        Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, width, height, width, height);
         GlStateManager.popMatrix();
     }
-
-
 }
