@@ -6,11 +6,7 @@ import mezz.jei.gui.TickTimer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.util.vector.Quaternion;
-import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -54,8 +50,11 @@ public class InternalDrawable implements IDrawable {
         Minecraft mc = Minecraft.getMinecraft();
         int index = tickTimer.getValue();
         mc.getTextureManager().bindTexture(resourceLocations.get(index));
+        int angle = 360 / resourceLocations.size();
         GlStateManager.pushMatrix();
-        Gui.drawModalRectWithCustomSizedTexture(xOffset, yOffset, 0, 0, width, height, width, height);
+        GlStateManager.translate(xOffset + (float) width / 2, yOffset + (float) height / 2, 0);
+        GlStateManager.rotate(angle * index, 0, 0, 1);
+        Gui.drawModalRectWithCustomSizedTexture(-width / 2, -height / 2, 0, 0, width, height, width, height);
         GlStateManager.popMatrix();
     }
 
